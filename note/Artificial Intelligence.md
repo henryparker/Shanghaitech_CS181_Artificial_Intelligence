@@ -1537,7 +1537,9 @@ $$
 \begin{align}
 P(X_{t+1}|e_{1:t+1})&=P(X_{t+1}|e_{1:t},e_{t+1})\\
 &=\frac{1}{P(e_{t+1}|e_{1:t})}P(e_{t+1}|X_{t+1},e_{1:t})P(X_{t+1}|e_{1:t})\\
-&=\alpha P(e_{t+1}|X_{t+1})P(X_{t+1}|e_{1:t})\\
+&=\alpha P(e_{t+1}|X_{t+1})P(X_{t+1}|e_{1:t}),where\, \alpha=\frac{1}{P(e_{t+1}|e_{1:t})}\\
 &=\alpha P(e_{t+1}|X_{t+1})\sum_{x_t}P(x_t|e_{1:t})P(X_{t+1}|x_t,e_{1:t})\\
-\end{align}
+&=\alpha P(e_{t+1}|X_{t+1})\sum_{x_t}P(x_t|e_{1:t})P(X_{t+1}|x_t)\\
+\end{align}\\
 $$
+该算法也称**前向算法（Forward Algorithm）**，形如$f_{1:t+1}$
