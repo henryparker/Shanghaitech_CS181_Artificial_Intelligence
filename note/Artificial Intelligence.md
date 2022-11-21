@@ -1524,6 +1524,23 @@ $$
 - **平滑 Smoothing**：$P(X_k|e_{1:t})$ for $0\leq k < t$
 - **最可能解释 Most likely explanation**：$argmax_{x_{0:t}}P(x_{0:t}|e_{1:t})$
 
+#### 状态路径 State trellis
+
+定义：有关状态的路径图并且随着时间变化
+
+![状态路径](./data/状态路径.png)
+
+- 对于每个箭头$\Rightarrow$代表状态的转换$x_{t-1}\rightarrow x_t$
+- 每个箭头的权重为$P(x_t|x_{t-1})P(e_t|x_t)$，起始权重为$P(x_0)$
+- 每条路径都是状态的序列
+- 一条路径的所有权重和和状态序列概率成正比
+
+$$
+P(x_0)\prod_tP(x_t|x_{t-1})P(e_t|x_t)=P(x_{1:t},e_{1:t})P(x_{1:t}|e_{1:t})
+$$
+
+
+
 #### 滤波
 
 定义：已知所有证据，推断当前状态
@@ -1542,4 +1559,9 @@ P(X_{t+1}|e_{1:t+1})&=P(X_{t+1}|e_{1:t},e_{t+1})\\
 &=\alpha P(e_{t+1}|X_{t+1})\sum_{x_t}P(x_t|e_{1:t})P(X_{t+1}|x_t)\\
 \end{align}\\
 $$
-该算法也称**前向算法（Forward Algorithm）**，形如$f_{1:t+1}$
+该算法也称**前向算法（Forward Algorithm）**，形如$f_{1:t+1}=FORWARD(f_{1:t},e_{t+1})$
+
+起始条件：$f_{1:0}=P(X_0)$
+
+时间复杂度：$O(|X|^2)$，$X$定义为状态的数量
+
