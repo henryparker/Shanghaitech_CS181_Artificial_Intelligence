@@ -113,3 +113,39 @@ $$
   - 考虑旧的估计：$Q(s,a)$
   - 考虑新的样本估计：$sample=R(s,a,s')+\gamma max_{a'}Q(s',a')$
   - 将新的估计并入运行平均值：$Q(s,a)\leftarrow (1-\alpha)Q(s,a)+(\alpha)[sample]$
+
+特性：
+
+- Q学习是一种与**策略无关的学习**，这意味着尽管选择不是最优的，Q学习也会收敛到最优策略
+
+## 根据MDP和问题特性选择方法
+
+![根据MDP和问题选择方法](./data/根据MDP和问题选择方法.png)
+
+## 探索策略选择
+
+### $\varepsilon$贪心
+
+制定一个概率$P=\varepsilon$：
+
+- 有$\varepsilon$的概率随机选择方向
+- 有$1-\varepsilon$的概率选择当前最优策略
+
+同时随着时间降低$\varepsilon$的值
+
+### 探索方程
+
+探索那些还未被充分探索的地方，最终将停止探索
+
+**核心思想**：通过修改Q值来选择行动
+
+效用方程定义为：
+$$
+f(u,n)=u+\frac{k}{n}
+$$
+其中$u$为Q值的估计，$k$为一个常数，$n$为该状态访问的次数
+
+**Q值更新**：
+
+- 通常情况下：$Q(s,a)\leftarrow_\alpha R(s,a,s')+\gamma max_{a'}Q(s',a')$
+- 修改情况下：$Q(s,a)\leftarrow_\alpha R(s,a,s')+\gamma max_{a'}f(Q(s',a'),N(s',a'))$
