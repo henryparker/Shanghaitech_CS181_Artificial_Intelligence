@@ -415,7 +415,284 @@ $$
 $$
 Note: 偏差等价于加入一个常量特征
 
+特性：
 
+- 分离性：如果某些参数得到的训练集完全正确，则分离性为真
+- 收敛性：如果训练集是可分离的，感知机最终会收敛
 
+#### 举例：二元感知机
 
+```pseudocode
+初始化：weights = 0
+循环：For each training instance:
+	通过当前权重分类，计算activation:
+		y = 1 if w*f(x) >= 0
+		y = -1 if w*f(x) < 0
+	如果分类正确:
+		continue
+	如果分类不正确:
+		通过加减特征向量来调整权重向量:
+			w = w + correcty * f(x)
+```
 
+#### 举例：多元感知机
+
+- 每个分类的权重向量是：$w_y$
+- 关于分类$y$的分数（激活）是：$w_y\cdot f(x)$
+- 最高分数的分类获胜：$y=arg\max_yw_y\cdot f(x)$
+
+```pseudocode
+初始化：weights = 0
+循环：For each training instance:
+	分类：y = argmax y(wy * f(x))
+	如果分类正确:
+		continue
+	如果分类不正确:
+		降低错误答案的分数，提高正确答案的分数:
+			wy = wy - f(x)
+			wy(correct) = wy(correct) + f(x)
+```
+
+### 改进感知机（逻辑回归）
+
+考虑之前的感知机，有如下问题：
+
+- 噪声：如果数据不是可分离的，那么权重可能会出现波动
+- 过度训练：测试的准确性通常会上升，然后下降
+
+而且，对于$z=w\cdot f(x)$，无论$z=0.1,z=100$都会产生$+1$
+
+我们希望：
+
+- $z$正数越大，$+1$概率趋近100%
+- $z$和0相近，$+1$概率趋近50%
+- $z$负数越小，$+1$概率趋近0
+
+有**S型曲线 Sigmoid Function**满足该特性：
+$$
+\phi(z)=\frac{1}{1+e^{-z}}
+$$
+![Sigmoid Function](./data/Sigmoid Function.png)
+
+**最大似然估计**为：
+$$
+\max_w ll(w)=\max_w\sum_i\log{P(y^{(i)}|x^{(i)};w)}
+$$
+其中
+$$
+\begin{align}
+P(y^{(i)}&=+1|x^{(i)};w)=\frac{1}{1+e^{-w\cdot f(x^{(i)})}}\\
+P(y^{(i)}&=-1|x^{(i)};w)=1-\frac{1}{1+e^{-w\cdot f(x^{(i)})}}
+\end{align}
+$$
+这被成为**逻辑回归**
+
+### 多级逻辑回归
+
+由于要运用概率的形式，因此需要对多元感知机分数（激活activation）做归一化
+
+假设原来分数值为$z_1,z_2,z_3$，则新的**软性激活**为$\frac{z_1}{z_1+z_2+z_3},\frac{z_2}{z_1+z_2+z_3},\frac{z_3}{z_1+z_2+z_3}$
+
+**最大似然估计**为：
+$$
+\max_w ll(w)=\max_w\sum_i\log{P(y^{(i)}|x^{(i)};w)}
+$$
+其中
+$$
+P(y^{(i)}|x^{(i)};w)=\frac{e^{w_{y^{(i)}}\cdot f(x^{(i)})}}{\sum_ye^{w_{y^{(i)}}\cdot f(x^{(i)})}}
+$$
+**如何来解函数$\max_w ll(w)=\max_w\sum_i\log{P(y^{(i)}|x^{(i)};w)}$？**
+
+考虑CSP中的爬山算法：从任意点开始，重复向最佳的相邻态移动，如果没有相邻态更佳，则推出。然而，如果优化实在连续域上的，将会有无穷多个相邻态。
+
+![逻辑回归爬山法](./data/逻辑回归爬山法.png)
+
+- 方法一：计算$g(w_0+h)$和$g(w_0-h)$，并向值更大的方向移动
+- 方法二：计算导数$\frac{\partial g(w_0)}{\partial w}=\lim_{h\rightarrow0}\frac{g(w_0+h)-g(w_0-h)}{2h}$，根据导数的正负来判断方向
+
+#### 梯度上升法 Gradient Ascent
+
+想法：对每个坐标进行上坡方向的更新，坡度越大，该坐标的步幅就越大
+
+考虑$g(w_1,w_2)$，对特征权重的更新为
+$$
+w_1\leftarrow w_1 + \alpha*\frac{\partial g}{\partial w_1}(w_1,w_2)\\
+w_2\leftarrow w_2 + \alpha*\frac{\partial g}{\partial w_2}(w_1,w_2)\\
+$$
+更一般化的写法为
+$$
+w\leftarrow w+\alpha*\nabla_wg(w)
+$$
+其中**梯度**为$\nabla_wg(w)=\left[\begin{matrix}\frac{\partial g}{\partial w_1}(w)\\\frac{\partial g}{\partial w_2}(w)\end{matrix}\right]$
+
+将该方法用于逻辑回归，可得步骤为
+
+- 初始化$w$
+
+- 对于每个样本：
+  $$
+  \begin{align}
+  w&\leftarrow w+\alpha*\sum_i\nabla\log{P(y^{(i)}|x^{(i)};w)}\\
+  &=w+\alpha*\sum_i\nabla\log{\frac{e^{w_{y^{(i)}}\cdot f(x^{(i)})}}{\sum_ye^{w_{y^{(i)}}\cdot f(x^{(i)})}}}\\
+  &=w+\alpha*\sum_i(\nabla w_{y^{(i)}}\cdot f(x^{(i)})-\nabla\log{\sum_ye^{w_{y^{(i)}}\cdot f(x^{(i)})}})
+  \end{align}
+  $$
+
+#### 随机梯度上升
+
+![随机梯度上升](./data/随机梯度上升.png)
+
+#### 小批量梯度上升
+
+![批量梯度上升](./data/批量梯度上升.png)
+
+# 十三、非监督学习
+
+非监督学习的训练集不包含期望的输出
+
+## 举例：群聚问题
+
+想法：将相似的样本聚合至一起
+
+“相似”的定义：
+
+- 点集：可以用欧拉距离来区分
+- 邮件：同一类型的邮件
+- 搜索结果
+
+## K-Means算法
+
+K-Means算法是一种迭代的群居算法
+
+- 随机选择K个点作为群聚中心点
+- 迭代：
+  - 将数据样本分给最近的中心点
+  - 更新中心点为群聚的平均点
+- 重复直到没有点的所属的群聚变化
+
+### K-Means具体实现
+
+定义到所有中心点的总距离为：
+$$
+\phi(\{x_i\},\{a_i\},\{c_k\})=\sum_idist(x_i,c_{a_i})
+$$
+其中
+
+- $x_i$：点坐标
+- $a_i$：分配的聚落
+- $c_k$：$k$聚落的中心点
+
+每一次迭代有两个阶段：
+
+1. 更新分配：固定每一个聚落的中心，改变所有点的分配
+2. 更新中心：固定所有点的分配，改变聚落的中心
+
+注意：每一步的过程中都不能增加$\phi$
+
+#### 步骤一：更新分配
+
+对于每个点，将该点重新分配到最近的中心点
+$$
+a_i={\arg\min}_kdist(x_i,c_k)
+$$
+注意到 $\phi(\{x_i\},\{a_i\},\{c_k\})=\sum_idist(x_i,c_{a_i})$不增加
+
+#### 步骤二：更新中心
+
+将每个均值移动到其指定点的平均值
+$$
+c_k=\frac{1}{|\{i:a_i=k\}|}\sum_{i:a_i=k}x_i
+$$
+注意到有最小欧拉距离的到集合的点是它们的中心
+
+### K-Means的不确定性
+
+K-Means对初始选择的中心点要求很高，否则可能会出现局部优化
+
+![KMeans不确定性](./data/KMeans不确定性.png)
+
+## 期望最大化 EM
+
+K-Means将数据分配到最近的中心，但有些集群可能比其他集群更宽，甚至集群间有重叠
+
+需要一个允许重叠、不同大小、形状集群的概率模型
+
+### 高斯混合模型 GMM
+
+#### 高斯分布
+
+$$
+P(x|\mu,\sigma)=\frac{1}{\sigma\sqrt{2\pi}}e^{\frac{-(x-\mu)^2}{2\sigma^2}}
+$$
+
+![高斯分布](./data/高斯分布.png)
+
+#### 混合高斯分布
+
+$$
+p(x)=\sum^K_{k=1}\pi_k\mathcal{N}(x|\mu_k,\sum_k)
+$$
+
+其中
+
+- $\pi_k$：混合系数
+- $\mathcal{N}(x|\mu_k,\sum_k)$：高斯分布
+- 归一化条件：$\forall k:\pi_k\geq0,\quad \sum^K_{k=1}\pi_k=1$
+
+#### 高斯混合模型
+
+- $P(Y)$：$k$个聚落分量的分布
+- $P(X|Y)$：每个分量从一个均值$\mu_i$和协方差矩阵$\sum_i$的多元高斯分布中生成的数据
+
+每一个数据点都从**生成过程**中采样：
+
+1. 以$\pi_i$的概率选择聚落$i$
+2. 从$N(x|\mu_i,\sum_i)$中生成数据点
+
+![高斯混合模型](./data/高斯混合模型.png)
+
+### 非监督学习中的高斯混合
+
+我们可以观察数据点和它们的标签（由其高斯聚落分量生成），但需要确定高斯混合模型的参数
+
+目标：最大化可能性
+$$
+\prod_jP(y_j=i,x_j)=\prod_j\pi_i\mathcal{N}(x_j|\mu,\sum_i)
+$$
+**封闭式解**：$m$个数据点，对于聚落分量$i$，假设有$n$个数据点，则
+$$
+\mu_i=\frac{1}{n}\sum^n_{j=1}x_j\qquad \sum_i=\frac{1}{N}\sum^n_{j=1}(x_j-\mu_i)(x_j-\mu_i)^T\qquad \pi_i=\frac{n}{m}
+$$
+但是对于聚落问题，标签$Y$是未知的，而最大化边缘可能性：
+$$
+\prod_jP(x_j)=\prod_j\sum_iP(y_i=i,x_j)=\prod_j\sum_i\pi_i\mathcal{N}(x_j|\mu,\sum_i)
+$$
+通过观察，可以发现两个事实：
+
+- 已知混合高斯分布，类型很容易给出
+- 已知类型，混合高斯分布也很容易找到
+
+**期望最大值 EM：**
+
+- 选择K个随机簇高斯模型
+- E Step：计算每个实例具有每个可能标签的概率，将数据实例按比例分配给不同的模型
+- M Step：根据分配的点（按比例）修改每个聚类模型
+- 重复E Step和M Step直至收敛
+
+**迭代：**在第$t$个迭代有参数估计
+$$
+\theta^{(t)}=\{\mu_1^{(t)},...,\mu_k^{(t)},\sum_1^{(t)},...,\sum_k^{(t)},\pi_1^{(t)},...,\pi_k^{(t)}\}
+$$
+**E-Step：**计算每个点的标签分布
+$$
+P(y_j=i|x_j,\theta^{(t)})\propto\pi_i^{(t)}\mathcal{N}(x_j|\mu_i^{(t)},\sum_i^{(t)})
+$$
+**M-Step：**给定标签分布，计算参数的MLE
+
+![EM参数估计](./data/EM参数估计.png)
+
+## EM 与 K-Means
+
+假设所有高斯分布是球形的，具有相同的权重和协方差（唯一的参数是均值），且在E-Step的标签分布是点估计，则**EM可以退化为K-Means**
+
+**EM**：可用于学习任何带有隐藏变量（缺失数据）的模型
