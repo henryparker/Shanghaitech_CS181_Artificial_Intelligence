@@ -217,7 +217,7 @@ Note：对于越高的$k$，计算复杂度越大
 
 **定义**：两个没有任何连结的图、相互没有任何影响、关联的结点被称作相互独立，如图中的$T$和其它结点
 
-![independent_structure](.\data\独立结构.png)
+![independent_structure](./data/独立结构.png)
 
 ### 树状结构
 
