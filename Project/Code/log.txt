@@ -1,0 +1,54 @@
+python sumo_test.py -m original
+The total waiting time is 75467.0
+The variance of waiting time is 839.594911
+
+python sumo_test.py -m random
+The total waiting time is 62800.0
+The variance of waiting time is 868.036
+
+python sumo_test.py -m period
+The total waiting time is 47942.0
+The variance of waiting time is 1681.856636
+
+python sumo_test.py -m greedy
+The total waiting time is 16850.0
+The variance of waiting time is 834.0175000000002
+
+# deep_qlearning_model_79.pth # epsilon=0.2
+python sumo_test.py -m deep_qlearning -g True
+The total waiting time is 21591.0
+The variance of waiting time is 701.5217190000001
+
+# deep_qlearning_model_new_79.pth # epsilon=0.2
+python sumo_test.py -m deep_qlearning -g True
+The total waiting time is 19152.0
+The variance of waiting time is 529.700896
+
+# deep_qlearning_model_new_99.pth # epsilon=0.2
+python sumo_test.py -m deep_qlearning -g True
+The total waiting time is 19835.0
+The variance of waiting time is 618.573775
+
+# deep_qlearning_model_new_99.pth # epsilon=0.3
+python sumo_test.py -m deep_qlearning -g True
+The total waiting time is 15908.0
+The variance of waiting time is 461.21953599999995
+
+#-----------------------code_deprecated---------------------------
+# deep_qlearning_model_90.pth # epsilon=0.3
+The total waiting time is 19260.0
+The variance of waiting time is 867.7363999999999
+
+# deep_qlearning_model_80.pth # epsilon=0.3
+The total waiting time is 18984.0
+The variance of waiting time is 535.805744
+
+# deep_qlearning_model_70.pth # epsilon=0.3
+The total waiting time is 18844.0
+The variance of waiting time is 611.7076640000001
+
+# deep_qlearning_model_60.pth # epsilon=0.3
+The total waiting time is 17384.0
+The variance of waiting time is 586.4885440000002
+
+

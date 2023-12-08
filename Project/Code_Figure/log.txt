@@ -1,0 +1,21 @@
+python sumo_test.py -m original
+The total waiting time is 75467.0
+The variance of waiting time is 839.594911
+
+python sumo_test.py -m random
+The total waiting time is 62800.0
+The variance of waiting time is 868.036
+
+python sumo_test.py -m period
+The total waiting time is 47942.0
+The variance of waiting time is 1681.856636
+
+python sumo_test.py -m greedy
+The total waiting time is 16850.0
+The variance of waiting time is 834.0175000000002
+
+# deep_qlearning_model_79.pth
+python sumo_test.py -m deep_qlearning -g True
+The total waiting time is 21591.0
+The variance of waiting time is 701.5217190000001
+
